@@ -1,7 +1,7 @@
 # Aria Avatar Companion for NVIDIA G-Assist
 
 <p align="center">
-  <img src="assets/aria_banner.png" alt="Aria Avatar Companion" width="600">
+  <img src="https://github.com/user-attachments/assets/15e7e074-ee79-48e6-810c-8c504642491d" alt="Aria Avatar Companion" width="600">
 </p>
 
 An anime-style avatar companion plugin for NVIDIA G-Assist that brings your gaming experience to life with an interactive AI friend powered by Google Gemini.
