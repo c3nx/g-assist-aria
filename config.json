@@ -1,0 +1,95 @@
+{
+  "plugin": {
+    "name": "Aria Avatar Companion",
+    "version": "1.0.0",
+    "enabled": true
+  },
+  
+  "ai": {
+    "provider": "gemini",
+    "model": "gemini-2.0-flash-exp",
+    "api_key_file": "gemini.key",
+    "temperature": 0.9,
+    "max_tokens": 150,
+    "stream_response": true
+  },
+  
+  "personality": {
+    "name": "Aria",
+    "type": "anime_companion",
+    "traits": [
+      "friendly",
+      "playful",
+      "supportive",
+      "gamer"
+    ],
+    "speech_patterns": {
+      "use_honorifics": true,
+      "honorific": "senpai",
+      "expressions": ["nya~", "desu~"],
+      "emoticons": ["^_^", ">.<", "~", ":)", ":D"]
+    }
+  },
+  
+  "language": {
+    "mode": "auto",
+    "supported": ["english", "turkish", "auto"],
+    "default": "english"
+  },
+  
+  "overlay": {
+    "enabled": true,
+    "position": {
+      "x": -1,
+      "y": -1,
+      "anchor": "bottom-right"
+    },
+    "size": {
+      "width": 450,
+      "height": 550
+    },
+    "sprite": {
+      "width": 350,
+      "height": 350,
+      "grid": "5x2",
+      "fps": 1
+    },
+    "speech_bubble": {
+      "enabled": true,
+      "duration": 15000,
+      "max_width": 520,
+      "font_size": 12,
+      "font_family": "Segoe UI"
+    }
+  },
+  
+  "emotions": {
+    "idle": 0,
+    "happy": 1,
+    "angry": 2,
+    "greeting": 3,
+    "sad": 4,
+    "speaking": 9
+  },
+  
+  "commands": {
+    "show": ["show", "show yourself", "appear", "come out"],
+    "hide": ["hide", "go away", "disappear", "close"],
+    "language_turkish": ["türkçe konuş", "turkce konus", "speak turkish"],
+    "language_english": ["ingilizce konuş", "ingilizce konus", "speak english"],
+    "language_auto": ["otomatik dil", "otomatik", "auto language"]
+  },
+  
+  "logging": {
+    "enabled": true,
+    "level": "INFO",
+    "file": "aria_plugin.log",
+    "max_size_mb": 10
+  },
+  
+  "performance": {
+    "check_interval_ms": 1000,
+    "inactivity_timeout_s": 120,
+    "response_chunk_delay_ms": 300
+  }
+}

@@ -1,0 +1,17 @@
+# Aria Avatar Companion - Requirements
+# Python 3.10+ required
+
+# Core Requirements
+google-genai>=0.8.3        # Google Gemini AI API
+PyQt5>=5.15.0             # GUI framework for avatar overlay
+psutil>=5.9.0             # Process management
+
+# Optional but Recommended
+PyQt5-Qt5>=5.15.2         # Qt5 runtime
+PyQt5-sip>=12.11.0        # PyQt5 bindings
+Pillow>=10.0.0            # Image processing for sprites
+
+# Development Tools (optional)
+pyinstaller>=6.0.0        # For building executable
+black>=23.0.0             # Code formatter
+pylint>=3.0.0             # Code linter
