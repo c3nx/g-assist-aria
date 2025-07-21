@@ -136,6 +136,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - Check if PyQt5 is installed: `pip install PyQt5`
 - Verify sprite file exists in correct location
 - Check `aria_plugin.log` for errors
+- Try windowed or fullscreen windowed options in game menu.
 
 ### API Errors
 - Verify your Gemini API key is valid
