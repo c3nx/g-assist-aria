@@ -87,7 +87,7 @@ def create_plugin_package():
     print("OK Created gemini.key.example")
     
     # Create final zip with aria folder structure
-    zip_name = "aria_avatar_companion_v1.0.0.zip"
+    zip_name = "aria_avatar_companion_v1.1.0.zip"
     with zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk(dist_dir):
             for file in files:
