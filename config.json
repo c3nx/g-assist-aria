@@ -1,8 +1,12 @@
 {
   "plugin": {
     "name": "Aria Avatar Companion",
-    "version": "1.0.0",
-    "enabled": true
+    "version": "1.1.0",
+    "description": "AI-powered anime companion for NVIDIA G-Assist",
+    "author": "c3nx",
+    "homepage": "https://github.com/c3nx/g-assist-aria",
+    "enabled": true,
+    "last_updated": "2024-01-20"
   },
   
   "ai": {

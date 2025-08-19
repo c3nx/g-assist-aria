@@ -26,7 +26,6 @@ def build_executable():
         "--add-data", "config.json;.",
         "--add-data", "manifest.json;.",
         "--add-data", "sprites;sprites",
-        "--add-data", "assets;assets",
         "--hidden-import", "google.genai",
         "--hidden-import", "PyQt5",
         "--hidden-import", "psutil",
@@ -35,61 +34,70 @@ def build_executable():
     
     try:
         subprocess.run(cmd, check=True)
-        print("✓ Executable built successfully")
+        print("OK Executable built successfully")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"✗ Failed to build executable: {e}")
+        print(f"ERROR Failed to build executable: {e}")
         return False
 
 def create_plugin_package():
-    """Create the final plugin package"""
-    print("\nCreating plugin package...")
+    """Create the final minimal plugin package"""
+    print("\nCreating minimal plugin package...")
     
     # Create dist directory if not exists
-    dist_dir = Path("dist/aria_companion")
+    dist_dir = Path("dist/aria")
     dist_dir.mkdir(parents=True, exist_ok=True)
     
-    # Files to include
+    # Essential files to copy
     files_to_copy = [
-        ("plugin.py", "plugin.py"),
-        ("canvas_overlay.py", "canvas_overlay.py"),
-        ("requirements.txt", "requirements.txt"),
         ("manifest.json", "manifest.json"),
-        ("config.json", "config.json"),
-        ("README.md", "README.md"),
     ]
     
     # Copy files
     for src, dst in files_to_copy:
         if os.path.exists(src):
             shutil.copy2(src, dist_dir / dst)
-            print(f"✓ Copied {src}")
+            print(f"OK Copied {src}")
         else:
-            print(f"⚠ Warning: {src} not found")
+            print(f"ERROR: {src} not found!")
+            return None
     
-    # Copy directories
-    dirs_to_copy = ["sprites", "assets"]
+    # Copy essential directories
+    dirs_to_copy = ["sprites"]
     for dir_name in dirs_to_copy:
         if os.path.exists(dir_name):
             shutil.copytree(dir_name, dist_dir / dir_name, dirs_exist_ok=True)
-            print(f"✓ Copied {dir_name} directory")
+            print(f"OK Copied {dir_name} directory")
+        else:
+            print(f"WARNING: {dir_name} directory not found")
     
-    # Copy executable if it exists
+    # Copy executable - CRITICAL FILE
     exe_path = Path("dist/aria_companion.exe")
     if exe_path.exists():
         shutil.copy2(exe_path, dist_dir / "aria_companion.exe")
-        print("✓ Copied executable")
+        print("OK Copied executable")
+    else:
+        print("ERROR: aria_companion.exe not found!")
+        return None
+        
+    # Create API key example
+    gemini_key_example = dist_dir / "gemini.key.example"
+    with open(gemini_key_example, 'w') as f:
+        f.write("YOUR_GEMINI_API_KEY_HERE")
+    print("OK Created gemini.key.example")
     
-    # Create final zip
+    # Create final zip with aria folder structure
     zip_name = "aria_avatar_companion_v1.0.0.zip"
     with zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk(dist_dir):
             for file in files:
                 file_path = Path(root) / file
-                arcname = file_path.relative_to(dist_dir.parent)
+                # Create archive path: aria/filename
+                rel_path = file_path.relative_to(dist_dir)
+                arcname = Path("aria") / rel_path
                 zipf.write(file_path, arcname)
     
-    print(f"\n✓ Plugin package created: {zip_name}")
+    print(f"\nOK Plugin package created: {zip_name}")
     print(f"  Size: {os.path.getsize(zip_name) / 1024 / 1024:.2f} MB")
     
     return zip_name
@@ -109,8 +117,8 @@ def main():
         print("Installing PyInstaller...")
         subprocess.check_call([sys.executable, "-m", "pip", "install", "pyinstaller"])
     
-    # Build executable (optional)
-    build_exe = input("Build executable? (y/n) [n]: ").lower() == 'y'
+    # Build executable (always build for deploy)
+    build_exe = True
     if build_exe:
         if not build_executable():
             print("Warning: Executable build failed, continuing with source files only")

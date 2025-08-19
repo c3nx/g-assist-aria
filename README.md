@@ -1,158 +1,226 @@
-# Aria Avatar Companion for NVIDIA G-Assist
+# 🌸 Aria Avatar Companion for NVIDIA G-Assist
 
-  <p align="center">
-    <img src="https://github.com/user-attachments/assets/15e7e074-ee79-48e6-810c-8c504642491d" alt="Aria Avatar
-  Companion" width="600">
-  </p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/15e7e074-ee79-48e6-810c-8c504642491d" alt="Aria Avatar Companion" width="600">
+</p>
 
-  An anime-style avatar companion plugin for NVIDIA G-Assist that brings your gaming experience to life with an
-  interactive AI friend powered by Google Gemini.
+<p align="center">
+  <strong>An AI-powered anime companion that lives on your screen</strong><br>
+  Powered by Google Gemini and NVIDIA G-Assist
+</p>
 
-  ## ✨ Features
+<p align="center">
+  <a href="https://github.com/c3nx/g-assist-aria/releases"><img src="https://img.shields.io/github/v/release/c3nx/g-assist-aria" alt="Release"></a>
+  <a href="https://github.com/c3nx/g-assist-aria/blob/main/LICENSE"><img src="https://img.shields.io/github/license/c3nx/g-assist-aria" alt="License"></a>
+  <a href="https://github.com/c3nx/g-assist-aria/issues"><img src="https://img.shields.io/github/issues/c3nx/g-assist-aria" alt="Issues"></a>
+</p>
 
-  - **Interactive Avatar**: Cute anime-style character with emotion-responsive animations
-  - **AI-Powered Chat**: Natural conversations powered by Google Gemini AI
-  - **Visual Speech Bubbles**: Manga-style chat bubbles above the avatar
-  - **Multi-Language Support**: Automatic language detection (English/Turkish)
-  - **Draggable Overlay**: Position Aria anywhere on your screen
-  - **Emotion System**: Dynamic expressions based on conversation context
-  - **Gaming Companion**: Get gaming tips, strategies, and friendly support
+---
 
-  ## 📋 Requirements
+## 🎯 What is Aria?
 
-  - Windows 10/11
-  - NVIDIA G-Assist
-  - Python 3.10+
-  - Google Gemini API key
+Aria is your personal anime gaming companion - a cute, interactive avatar that responds to your chat with emotions, personality, and helpful gaming advice. She appears as a draggable overlay on your screen and uses AI to have natural conversations with you while you game.
 
-  ## 🚀 Quick Start
+## ✨ Features
 
-  ### Installation
+- 🤖 **AI-Powered Conversations** - Natural chat using Google Gemini
+- 🎭 **Emotion System** - Responsive animations based on conversation context
+- 💬 **Speech Bubbles** - Manga-style chat bubbles with personality
+- 🌍 **Multi-Language** - Auto-detects and responds in your language (English/Turkish)
+- 🎮 **Gaming Companion** - Get tips, strategies, and encouragement
+- 📍 **Draggable Overlay** - Position Aria anywhere on your screen
+- 🔧 **Enhanced Error Handling** - User-friendly setup with helpful error messages
+- 📦 **Easy Installation** - One-click setup with pre-built releases
 
-  1. **Clone the Repository**
-     ```bash
-     git clone https://github.com/c3nx/g-assist-aria.git
-     cd g-assist-aria
+## 📋 Requirements
 
-  2. Install Dependencies
-  pip install -r requirements.txt
-  3. Build the Plugin
-  python build.py
-  4. Install to G-Assist
-  Copy all files from the dist folder to: %PROGRAMDATA%\NVIDIA Corporation\nvtopps\rise\plugins\aria
-  5. Add Your API Key
-    - Get a free API key from https://makersuite.google.com/app/apikey
-    - Create a file named gemini.key in the plugin directory
-    - Paste your API key into this file
-  6. Restart G-Assist
+- **Windows 10/11**
+- **NVIDIA G-Assist** (installed and running)
+- **Google Gemini API Key** (free from Google AI Studio)
 
-  Note: Building from source avoids Windows Defender false positive warnings that may occur with pre-compiled
-  releases.
+## 📦 Installation
 
-  Usage
+### Option 1: Pre-built Release (Recommended)
 
-  Simply chat with Aria using the G-Assist command:
-  /aria chat Hello! How are you today?
+1. **Download** the latest release:
+   ```
+   📥 Download aria_avatar_companion_v1.1.0.zip from:
+   https://github.com/c3nx/g-assist-aria/releases
+   ```
 
-  Special Commands
+2. **Extract** to G-Assist plugins directory:
+   ```
+   Extract to: %PROGRAMDATA%\NVIDIA Corporation\nvtopps\rise\plugins\
+   ```
+   
+   ✅ **Correct folder structure:**
+   ```
+   📁 %PROGRAMDATA%\NVIDIA Corporation\nvtopps\rise\plugins\
+   └── 📁 aria\
+       ├── aria_companion.exe
+       ├── manifest.json
+       ├── sprites\
+       └── gemini.key.example
+   ```
 
-  - Show Avatar: /aria chat show
-  - Hide Avatar: /aria chat hide
+3. **Get your API key:**
+   - Visit: https://aistudio.google.com/app/apikey
+   - Create a new API key (free)
+   - Copy the key
 
-  🎨 Customization
+4. **Create gemini.key file:**
+   ```
+   📁 In the aria folder, create a new file named exactly: gemini.key
+   ⚠️ NOT gemini.key.txt - just gemini.key
+   📝 Paste your API key inside this file
+   ```
 
-  Using Your Own Sprite
+5. **Restart G-Assist**
 
-  1. Create a 5x2 grid sprite sheet (PNG format)
-  2. Each frame should be the same size
-  3. Place it in the sprites folder as aria.png
+### Option 2: Build from Source
 
-  Frame Layout:
-  [0: Idle]    [1: Happy]   [2: Angry]   [3: Greeting] [4: Sad]
-  [5: Extra 1] [6: Extra 2] [7: Extra 3] [8: Extra 4]  [9: Speaking]
+```bash
+git clone https://github.com/c3nx/g-assist-aria.git
+cd g-assist-aria
+pip install -r requirements.txt
+python build.py
+```
 
-  Configuration
+## 🎮 Usage
 
-  Edit config.json to customize:
-  - Avatar position and size
-  - Speech bubble duration
-  - Emotion mappings
-  - Language preferences
-  - And more!
+Once installed, chat with Aria using G-Assist:
 
-  🛠️ Building from Source
+```
+/aria hi there!
+/aria how are you feeling today?
+/aria show yourself
+/aria give me some gaming tips
+```
 
-  Prerequisites
+### Special Commands
 
-  pip install -r requirements.txt
+- **Show Avatar:** `/aria show` or `/aria show yourself`
+- **Hide Avatar:** `/aria hide` or `/aria go away`
+- **Language Settings:**
+  - `/aria speak turkish` - Switch to Turkish
+  - `/aria speak english` - Switch to English
+  - `/aria auto language` - Auto-detect language
 
-  Running from Source
+## 🔧 Troubleshooting
 
-  python plugin.py
+### ❌ "Gemini API not configured" Error
 
-  Building Executable
+**Problem:** Plugin can't find or read your API key
 
-  python build.py
+**Solutions:**
+- ✅ Check if `gemini.key` file exists (NOT `gemini.key.txt`)
+- ✅ Verify API key is valid and has no extra spaces
+- ✅ Get a new key from: https://aistudio.google.com/app/apikey
 
-  This creates a distributable package with all necessary files.
+### ❌ "No message provided" Error
 
-  📁 Project Structure
+**Problem:** Plugin recognizes commands but can't read messages
 
-  aria-avatar-companion/
-  ├── plugin.py              # Main plugin file
-  ├── canvas_overlay.py      # Avatar overlay window
-  ├── manifest.json          # Plugin metadata
-  ├── config.json           # Configuration file
-  ├── requirements.txt      # Python dependencies
-  ├── build.py             # Build script
-  ├── sprites/
-  │   └── aria.png         # Default sprite sheet
-  └── assets/
-      └── aria_icon.png    # Plugin icon
+**Solution:** 
+- ✅ Update to v1.1.0+ (this was a compatibility bug)
 
-  🤝 Contributing
+### ❌ Avatar Not Showing
 
-  Contributions are welcome! Please feel free to submit a Pull Request.
+**Causes & Solutions:**
+- 🎮 **Game mode:** Run games in Windowed or Borderless Windowed mode
+- 🛡️ **Windows Defender:** Check if overlay was blocked, add exception
+- 📁 **Missing sprites:** Verify `sprites/aria.png` exists
 
-  Development Guidelines
+### ❌ Turkish Characters Look Broken
 
-  1. Follow the existing code style
-  2. Test your changes thoroughly
-  3. Update documentation as needed
-  4. Submit PR with a clear description
+**Status:** Known issue, fix coming in next update
+**Temporary fix:** Use English mode with `/aria speak english`
 
-  🐛 Troubleshooting
+### ❌ Found gemini.key.txt instead of gemini.key
 
-  Avatar Not Appearing
+**Problem:** File extension is wrong
+**Solution:** Rename file to remove `.txt` extension
 
-  - Check if PyQt5 is installed: pip install PyQt5
-  - Verify the sprite file exists in the correct location
-  - Check aria_plugin.log for errors
-  - Try windowed or fullscreen windowed options in the game menu.
+## 🎨 Customization
 
-  API Errors
+### Using Your Own Avatar Sprite
 
-  - Verify your Gemini API key is valid
-  - Check internet connection
-  - Ensure the API key file has no extra spaces or newlines
+1. Create a **5x2 grid** sprite sheet (PNG format)
+2. Each frame should be the same size (recommended: 64x64px)
+3. Save as `sprites/aria.png`
 
-  Text Truncation
+**Frame Layout:**
+```
+[0: Idle]    [1: Happy]   [2: Angry]   [3: Greeting] [4: Sad]
+[5: Extra 1] [6: Extra 2] [7: Extra 3] [8: Extra 4]  [9: Speaking]
+```
 
-  - Update to the latest version
-  - Check the log file for chunk processing errors
+### Configuration
 
-  📜 License
+Edit `config.json` to customize:
+- Avatar size and position
+- Speech bubble duration
+- Emotion mappings
+- Animation timing
 
-  This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
+## 📁 Project Structure
 
-  🙏 Acknowledgments
+```
+g-assist-aria/
+├── 📄 plugin.py              # Main plugin logic
+├── 📄 canvas_overlay.py      # Avatar overlay window
+├── 📄 manifest.json          # G-Assist plugin metadata
+├── 📄 config.json           # Configuration settings
+├── 📄 build.py             # Build script
+├── 📄 requirements.txt     # Python dependencies
+├── 📁 sprites/
+│   └── 📄 aria.png         # Default avatar sprite sheet
+└── 📁 assets/              # Additional assets
+```
 
-  - NVIDIA for the G-Assist platform
-  - Google for Gemini AI API
-  - The anime and gaming community for inspiration
+## 📝 Changelog
 
-  📞 Support
+### v1.1.0 (2024-01-20) - Enhanced Compatibility Update
+- ✅ **FIXED:** G-Assist parameter passing compatibility
+- ✅ **FIXED:** "No message provided" error
+- ✅ **ADDED:** Intelligent API key detection (handles .txt mistakes)
+- ✅ **ADDED:** User-friendly error messages with help links
+- ✅ **IMPROVED:** Build system and folder structure
+- ✅ **UPDATED:** Documentation and troubleshooting
 
-  - Issues: https://github.com/c3nx/g-assist-aria/issues
-  - Discussions: https://github.com/c3nx/g-assist-aria/discussions
-  - G-Assist Forums: https://forums.developer.nvidia.com/
+### v1.0.0 - Initial Release
+- 🎉 Initial release with basic functionality
+
+## 🤝 Contributing
+
+Contributions are welcome! Please check the [Issues](https://github.com/c3nx/g-assist-aria/issues) page for ways to help.
+
+### Development Setup
+```bash
+git clone https://github.com/c3nx/g-assist-aria.git
+cd g-assist-aria
+pip install -r requirements.txt
+python plugin.py  # Run from source
+```
+
+## 📜 License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **NVIDIA** for the G-Assist platform
+- **Google** for Gemini AI API
+- **The anime and gaming community** for inspiration
+
+## 📞 Support & Community
+
+- 🐛 **Bug Reports:** [GitHub Issues](https://github.com/c3nx/g-assist-aria/issues)
+- 💬 **Discussions:** [GitHub Discussions](https://github.com/c3nx/g-assist-aria/discussions)
+- 🎮 **G-Assist Community:** [NVIDIA Developer Forums](https://forums.developer.nvidia.com/)
+
+---
+
+<p align="center">
+  Made with ❤️ for the gaming community
+</p>

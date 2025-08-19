@@ -345,8 +345,12 @@ class CanvasAriaOverlay(QLabel):
             return
             
         painter.setRenderHint(QPainter.Antialiasing)
+        painter.setRenderHint(QPainter.TextAntialiasing, True)
         
-        font = QFont("Segoe UI", 12, QFont.Normal)
+        # Use Arial for better Turkish character support
+        font = QFont("Arial", 12, QFont.Normal)
+        font.setStyleHint(QFont.SansSerif)
+        font.setFamily("Arial, Tahoma, Segoe UI, sans-serif")
         painter.setFont(font)
         
         # Dynamic dimensions
@@ -368,7 +372,8 @@ class CanvasAriaOverlay(QLabel):
         doc = QTextDocument()
         doc.setDefaultFont(font)
         doc.setTextWidth(box_width - padding * 2)
-        doc.setPlainText(self.speech_text)
+        # Ensure proper UTF-8 handling
+        doc.setPlainText(str(self.speech_text))
         text_height = int(doc.size().height())
         
         min_height = 60

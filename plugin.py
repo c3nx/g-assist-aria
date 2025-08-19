@@ -56,6 +56,41 @@ def set_language_setting(mode):
         logging.error(f"Error saving language config: {e}")
     return False
 
+def find_api_key():
+    """Find API key file with enhanced error reporting"""
+    base_dir = os.path.dirname(API_KEY_FILE)
+    
+    # Check primary file: gemini.key
+    if os.path.isfile(API_KEY_FILE):
+        try:
+            with open(API_KEY_FILE, 'r', encoding='utf-8') as f:
+                key = f.read().strip()
+            if key and key != "YOUR_GEMINI_API_KEY_HERE":
+                logging.info("Found valid API key in gemini.key")
+                return key, None
+            else:
+                logging.warning("gemini.key file exists but is empty or contains placeholder")
+                return None, "API key file is empty or contains placeholder. Please add your actual API key from: https://aistudio.google.com/app/apikey"
+        except Exception as e:
+            logging.error(f"Error reading gemini.key: {e}")
+            return None, f"Cannot read gemini.key file: {e}"
+    
+    # Check common mistake: gemini.key.txt
+    txt_file = API_KEY_FILE + ".txt"
+    if os.path.isfile(txt_file):
+        logging.warning("Found gemini.key.txt instead of gemini.key")
+        return None, f"Found gemini.key.txt file. Please rename it to 'gemini.key' (remove .txt extension)"
+    
+    # Check if example file exists
+    example_file = API_KEY_FILE + ".example"
+    if os.path.isfile(example_file):
+        logging.info("Found gemini.key.example file")
+        return None, f"Please create a 'gemini.key' file with your Gemini API key from: https://aistudio.google.com/app/apikey"
+    
+    # No files found
+    logging.error(f"No API key file found in: {base_dir}")
+    return None, f"No API key file found. Please create 'gemini.key' file in: {base_dir} and add your API key from: https://aistudio.google.com/app/apikey"
+
 def create_chat_display(context):
     """Create simple chat display from G-Assist context"""
     try:
@@ -184,7 +219,7 @@ def main():
     CONTEXT_PROPERTY = 'messages'
     SYSTEM_INFO_PROPERTY = 'system_info'
     FUNCTION_PROPERTY = 'func'
-    PARAMS_PROPERTY = 'properties'
+    PARAMS_PROPERTY = 'params'
     INITIALIZE_COMMAND = 'initialize'
     SHUTDOWN_COMMAND = 'shutdown'
 
@@ -194,7 +229,7 @@ def main():
     commands = {
         'initialize': execute_initialize_command,
         'shutdown': execute_shutdown_command,
-        'aria_companion': execute_aria_command,
+        'chat': execute_chat_command,
     }
     cmd = ''
 
@@ -219,9 +254,9 @@ def main():
                             response = commands[cmd]()
                         else:
                             response = commands[cmd](
-                                input[PARAMS_PROPERTY] if PARAMS_PROPERTY in input else None,
-                                input[CONTEXT_PROPERTY] if CONTEXT_PROPERTY in input else None,
-                                input[SYSTEM_INFO_PROPERTY] if SYSTEM_INFO_PROPERTY in input else None
+                                tool_call[PARAMS_PROPERTY] if PARAMS_PROPERTY in tool_call else None,
+                                tool_call[CONTEXT_PROPERTY] if CONTEXT_PROPERTY in tool_call else None,
+                                tool_call[SYSTEM_INFO_PROPERTY] if SYSTEM_INFO_PROPERTY in tool_call else None
                             )
                     else:
                         logging.warning(f'Unknown command: {cmd}')
@@ -331,15 +366,15 @@ def execute_initialize_command() -> dict:
     
     logging.info('Initializing Aria plugin')
     
-    # Read API key
-    key = None
-    if os.path.isfile(API_KEY_FILE):
-        with open(API_KEY_FILE) as file:
-            key = file.read().strip()
-
+    # Find API key with enhanced error reporting
+    key, error_message = find_api_key()
+    
     if not key:
-        logging.error('No API key found')
-        return generate_success_response() # Allow to continue
+        logging.error(f'API key initialization failed: {error_message}')
+        API_KEY = None
+        client = None
+        # Return success to allow plugin to start, but with no API functionality
+        return generate_success_response()
 
     try:
         client = genai.Client(api_key=key)
@@ -347,39 +382,80 @@ def execute_initialize_command() -> dict:
         API_KEY = key
         return generate_success_response()
     except Exception as e:
-        logging.error(f'Configuration failed: {str(e)}')
+        logging.error(f'Gemini API configuration failed: {str(e)}')
         API_KEY = None
-        return generate_failure_response(str(e))
+        client = None
+        return generate_success_response()  # Allow plugin to start
 
 def execute_shutdown_command() -> dict:
     ''' Cleanup resources '''
     logging.info('Aria plugin shutdown - overlay should detect inactivity and close')
     return generate_success_response()
 
-def execute_aria_command(params: dict = None, context: dict = None, system_info: str = None) -> dict:
+def execute_chat_command(params: dict = None, context: dict = None, system_info: dict = None) -> dict:
     ''' Handle Aria companion chat '''
     global API_KEY, client
 
     # Auto-initialize if not done yet
-    if API_KEY is None:
+    if API_KEY is None or client is None:
         logging.info("ARIA: Auto-initializing...")
         init_result = execute_initialize_command()
         if not init_result.get('success', False):
-            ERROR_MESSAGE = "Aria's API key is missing. Please check the gemini.key file."
+            ERROR_MESSAGE = "Failed to initialize Aria plugin."
             logging.error("ARIA: " + ERROR_MESSAGE)
             return generate_failure_response(ERROR_MESSAGE)
+    
+    # Check if client is still None after initialization
+    if client is None:
+        # Try to get detailed error message
+        _, error_message = find_api_key()
+        if error_message:
+            logging.error(f"ARIA: {error_message}")
+            return generate_failure_response(f"Gemini API not configured: {error_message}")
+        else:
+            return generate_failure_response("Gemini API client not initialized. Please check your API key configuration.")
 
     try:
         logging.info("ARIA: Starting chat request")
-
-        # Get user input with proper validation
-        if not context or not isinstance(context, list) or len(context) == 0:
-            logging.error("ARIA: No conversation context provided")
-            return generate_failure_response("No conversation context provided")
         
-        # Extract user input safely
-        last_message = context[-1] if context else {}
-        user_input = last_message.get("content", "")
+        # DEBUG: Log all incoming parameters
+        logging.info(f"ARIA DEBUG: params type: {type(params)}")
+        logging.info(f"ARIA DEBUG: params content: {params}")
+        if isinstance(params, dict):
+            logging.info(f"ARIA DEBUG: params keys: {list(params.keys())}")
+        logging.info(f"ARIA DEBUG: context type: {type(context)}")
+        logging.info(f"ARIA DEBUG: context content: {context}")
+
+        # Get user input from params (G-Assist protocol) - Try multiple formats
+        user_input = None
+        
+        if params:
+            if isinstance(params, str):
+                user_input = params
+                logging.info("ARIA DEBUG: Used params as string")
+            elif isinstance(params, dict):
+                # Try multiple possible keys
+                for key in ['message', 'input', 'text', 'query', 'prompt']:
+                    if key in params:
+                        user_input = params[key]
+                        logging.info(f"ARIA DEBUG: Found input in key: {key}")
+                        break
+                
+                # If no known key, use first value
+                if not user_input and params:
+                    user_input = str(list(params.values())[0])
+                    logging.info(f"ARIA DEBUG: Used first value: {user_input}")
+        
+        # Fallback: try to get from context
+        if not user_input and context and isinstance(context, list) and len(context) > 0:
+            last_message = context[-1]
+            if isinstance(last_message, dict) and 'content' in last_message:
+                user_input = last_message['content']
+                logging.info("ARIA DEBUG: Used context fallback")
+        
+        if not user_input:
+            logging.error(f"ARIA: No message found. Params: {params}, Context: {context}")
+            return generate_failure_response("No message provided - DEBUG MODE ACTIVE, check aria_plugin.log")
         if not user_input.strip():
             logging.error("ARIA: Empty user message")
             return generate_failure_response("Empty user message")
@@ -426,17 +502,17 @@ def execute_aria_command(params: dict = None, context: dict = None, system_info:
         # Show overlay on any chat interaction (unless it's a hide command)
         show_overlay()
         
-        # Create simple chat display from G-Assist context
-        logging.info(f"ARIA: Context type: {type(context)}, length: {len(context) if context else 'None'}")
-        if context:
-            logging.info(f"ARIA: Context sample: {str(context)[:200]}...")
-        
-        chat_display = create_chat_display(context)
-        if chat_display:
-            # Save chat context to file for overlay to read
-            save_chat_context(chat_display)
+        # Create simple chat display from G-Assist context (if available)
+        if context and isinstance(context, list):
+            logging.info(f"ARIA: Context length: {len(context)}")
+            chat_display = create_chat_display({'messages': context})
+            if chat_display:
+                # Save chat context to file for overlay to read
+                save_chat_context(chat_display)
+            else:
+                logging.info("ARIA: No chat display created")
         else:
-            logging.info("ARIA: No chat display created")
+            logging.info("ARIA: No context provided, continuing with direct message")
 
         # Get current language setting
         current_language_mode = get_language_setting()
@@ -465,24 +541,32 @@ User: {user_input}"""
         # Send to Gemini
         system_instruction = language_instruction
         
-        chat = client.chats.create(
-            model='gemini-2.0-flash-exp',
-            config={'system_instruction': system_instruction}
-        )
-        response = chat.send_message_stream(aria_prompt)
-        
-        # Stream response
-        for chunk in response:
-            if chunk.text:
-                logging.info(f'ARIA: Response chunk: {chunk.text}')
-                write_response(generate_message_response(chunk.text))
-        
-        logging.info("ARIA: Response completed successfully")
-        return generate_success_response()
+        try:
+            chat = client.chats.create(
+                model='gemini-2.0-flash-exp',
+                config={'system_instruction': system_instruction}
+            )
+            response = chat.send_message_stream(aria_prompt)
+            
+            # Stream response
+            for chunk in response:
+                if chunk.text:
+                    logging.info(f'ARIA: Response chunk: {chunk.text}')
+                    write_response(generate_message_response(chunk.text))
+            
+            logging.info("ARIA: Response completed successfully")
+            return generate_success_response()
+            
+        except AttributeError as e:
+            logging.error(f'ARIA: Client not properly initialized: {str(e)}')
+            return generate_failure_response("Gemini API client error. Please verify your API key is valid and from: https://aistudio.google.com/app/apikey")
+        except Exception as e:
+            logging.error(f'ARIA: Gemini API error: {str(e)}')
+            return generate_failure_response(f'Gemini API error: {str(e)}. Verify your API key at: https://aistudio.google.com/app/apikey')
         
     except Exception as e:
-        logging.error(f'ARIA: API error: {str(e)}')
-        return generate_failure_response(f'API error: {str(e)}')
+        logging.error(f'ARIA: Unexpected error: {str(e)}')
+        return generate_failure_response(f'Unexpected error: {str(e)}')
 
 if __name__ == '__main__':
     main()

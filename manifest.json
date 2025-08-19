@@ -1,82 +1,18 @@
 {
-  "name": "Aria Avatar Companion",
-  "version": "1.0.0",
-  "description": "An anime-style avatar companion for NVIDIA G-Assist with Gemini AI integration",
-  "author": "G-Assist Community",
-  "license": "Apache-2.0",
-  "runtime": "python",
-  "main": "plugin.py",
-  "icon": "assets/aria_icon.png",
-  "categories": ["companion", "ai", "avatar", "gaming"],
-  "keywords": ["aria", "anime", "companion", "gemini", "avatar", "chat"],
-  
-  "commands": {
-    "aria_companion": {
-      "description": "Chat with Aria, your anime gaming companion",
-      "usage": "/aria chat <message>",
-      "examples": [
-        "/aria chat hello",
-        "/aria chat what games should I play?",
-        "/aria chat show yourself",
-        "/aria chat hide"
-      ],
-      "parameters": {
-        "message": {
+  "manifestVersion": 1,
+  "executable": "aria_companion.exe",
+  "persistent": true,
+  "functions": [
+    {
+      "name": "chat",
+      "description": "Chat with Aria, your anime gaming companion. Example: 'Aria, how are you today?' or 'Aria, show yourself!'",
+      "tags": ["chat", "anime", "companion"],
+      "properties": {
+        "input": {
           "type": "string",
-          "description": "Your message to Aria",
-          "required": true
+          "description": "Your message to Aria"
         }
       }
     }
-  },
-  
-  "settings": {
-    "api_key_path": {
-      "type": "string",
-      "description": "Path to Gemini API key file",
-      "default": "%PROGRAMDATA%\\NVIDIA Corporation\\nvtopps\\rise\\plugins\\aria\\gemini.key"
-    },
-    "language_mode": {
-      "type": "string",
-      "description": "Language mode: auto, english, turkish",
-      "default": "auto",
-      "enum": ["auto", "english", "turkish"]
-    },
-    "overlay_enabled": {
-      "type": "boolean",
-      "description": "Enable avatar overlay window",
-      "default": true
-    },
-    "sprite_path": {
-      "type": "string",
-      "description": "Path to sprite sheet (5x2 grid PNG)",
-      "default": "sprites/aria.png"
-    }
-  },
-  
-  "dependencies": {
-    "python": ">=3.10",
-    "packages": [
-      "google-genai>=0.8.3",
-      "PyQt5>=5.15.0",
-      "psutil>=5.9.0"
-    ]
-  },
-  
-  "files": [
-    "plugin.py",
-    "canvas_overlay.py",
-    "requirements.txt",
-    "config.json",
-    "README.md",
-    "sprites/aria.png",
-    "assets/aria_icon.png"
-  ],
-  
-  "permissions": {
-    "gui": true,
-    "file_system": ["read", "write"],
-    "network": ["https://generativelanguage.googleapis.com"],
-    "process": ["create", "terminate"]
-  }
+  ]
 }

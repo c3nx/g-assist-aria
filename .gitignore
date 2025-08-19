@@ -56,8 +56,18 @@ api_key.txt
 # User data
 aria_language.config
 
+# Test and debug files
+*test*.json
+*debug*.json
+*minimal*.json
+*corsair*.json
+nul
+
 # Temporary files
 *.tmp
 *.temp
 *.lock
 *.pid
+
+# Build outputs (specific to this project)
+aria_avatar_companion_*.zip
